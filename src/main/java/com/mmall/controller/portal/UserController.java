@@ -24,18 +24,19 @@ public class UserController {
 
     /**
      * 用户登录
+     *
      * @param username
      * @param password
      * @param session
      * @return
      */
-    @RequestMapping(value = "login.do",method = RequestMethod.POST)
+    @RequestMapping(value = "login.do", method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> login(String username, String password, HttpSession session){
+    public ServerResponse<User> login(String username, String password, HttpSession session) {
 
         ServerResponse<User> response = iUserService.login(username, password);
         if (response.isSuccess()) {
-            session.setAttribute(Const.CURRENT_USER,response.getData());
+            session.setAttribute(Const.CURRENT_USER, response.getData());
         }
 
         return response;
@@ -43,36 +44,81 @@ public class UserController {
 
     /**
      * 用户登出
+     *
      * @param session
      * @return
      */
-    @RequestMapping(value = "logout.do",method = RequestMethod.GET)
+    @RequestMapping(value = "logout.do", method = RequestMethod.GET)
     @ResponseBody
-    public ServerResponse<String> logout(HttpSession session){
+    public ServerResponse<String> logout(HttpSession session) {
         session.removeAttribute(Const.CURRENT_USER);
         return ServerResponse.createBySuccess();
     }
 
     /**
      * 注册
+     *
      * @param user
      * @return
      */
-    @RequestMapping(value = "register.do",method = RequestMethod.GET)
+    @RequestMapping(value = "register.do", method = RequestMethod.GET)
     @ResponseBody
-    public ServerResponse<String> register(User user){
+    public ServerResponse<String> register(User user) {
         return iUserService.register(user);
     }
 
     /**
      * 校验
+     *
      * @param str
      * @param type
      * @return
      */
-    @RequestMapping(value = "check_valid.do",method = RequestMethod.GET)
+    @RequestMapping(value = "check_valid.do", method = RequestMethod.GET)
     @ResponseBody
-    public ServerResponse<String> checkValid(String str,String type){
-        return iUserService.checkValid(str,type);
+    public ServerResponse<String> checkValid(String str, String type) {
+        return iUserService.checkValid(str, type);
+    }
+
+    /**
+     * 获取用户信息
+     *
+     * @param session
+     * @return
+     */
+    @RequestMapping(value = "get_user_info.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<User> getUserInfo(HttpSession session) {
+        User user = (User) session.getAttribute(Const.CURRENT_USER);
+        if (user != null) {
+            return ServerResponse.createBySuccess(user);
+        }
+        return ServerResponse.createByErrorMessage("用户未登录，无法获取用户相关信息");
+    }
+
+    /**
+     * 密码提示问题
+     *
+     * @param username
+     * @return
+     */
+    @RequestMapping(value = "forget_get_question.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> forgetGetQuestion(String username) {
+        return iUserService.selectQuestion(username);
+    }
+
+    /**
+     * 检查问题答案
+     *
+     * @param username
+     * @param question
+     * @param answer
+     * @return
+     */
+    @RequestMapping(value = "forget_check_answer.do", method = RequestMethod.GET)
+    @ResponseBody
+    public ServerResponse<String> forgetCheckAnswer(String username, String question, String answer) {
+        return iUserService.forgetCheckAnswer(username, question, answer);
     }
 }
