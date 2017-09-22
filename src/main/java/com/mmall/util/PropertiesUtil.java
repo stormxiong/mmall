@@ -29,9 +29,7 @@ public class PropertiesUtil {
 
     public static String getProperty(String key){
         String value = props.getProperty(key.trim());
-        if(StringUtils.isBlank(value)){
-            return null;
-        }
+        if(StringUtils.isBlank(value)) return null;
         return value.trim();
     }
 
